@@ -2,124 +2,120 @@
 <html lang="en">
 
 <head>
-  
-<meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>Invoice AI Extractor Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link rel="stylesheet"
-href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Invoice Extractor</title>
+
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
 
 </head>
 
 <body>
 
-<header>
+<div class="container">
 
-<div class="logo">
+    <h1>Invoice Extractor</h1>
 
-Invoice AI Extractor Pro
+    <p class="subtitle">
+        Upload scanned invoice PDFs and extract invoice details
+    </p>
 
-</div>
+    <!-- Upload Section -->
 
-<div class="version">
+    <div class="top-buttons">
 
-Version 1.0
+        <input
+            type="file"
+            id="pdfInput"
+            accept=".pdf"
+            multiple
+            hidden>
 
-</div>
+        <button id="chooseBtn">
+            Choose PDF Files
+        </button>
 
-</header>
+        <button id="extractBtn" disabled>
+            Extract Data
+        </button>
 
-<div class="main-container">
+        <button id="downloadBtn" disabled>
+            Download Excel
+        </button>
 
-<!-- LEFT PANEL -->
+        <button id="resetBtn">
+            Start Over
+        </button>
 
-<div class="left-panel">
+    </div>
 
-<h2>Dashboard</h2>
+    <!-- Selected Files -->
 
-<div class="card">
+    <div class="selected-files">
 
-<h3>Total PDFs</h3>
+        <h2>Selected PDF Files</h2>
 
-<p id="totalFiles">0</p>
+        <div id="fileList">
 
-</div>
+            No PDF Selected
 
-<div class="card">
+        </div>
 
-<h3>Uploaded</h3>
+    </div>
 
-<p id="uploadedFiles">0</p>
+    <!-- Loading -->
 
-</div>
+    <div id="loader" class="loader">
 
-<div class="card">
+        Extracting invoice data...
 
-<h3>Completed</h3>
+    </div>
 
-<p id="completedFiles">0</p>
+    <!-- Result Table -->
 
-</div>
+    <div class="table-container">
 
-<div class="card">
+        <table id="resultTable">
 
-<h3>Failed</h3>
+            <thead>
 
-<p id="failedFiles">0</p>
+                <tr>
 
-</div>
+                    <th>PO Code</th>
+                    <th>Invoice No</th>
+                    <th>Invoice Date</th>
+                    <th>Base Amount</th>
+                    <th>IGST</th>
+                    <th>CGST/CESS</th>
+                    <th>SGST</th>
+                    <th>Other Charges</th>
+                    <th>Total Amount</th>
 
-</div>
+                </tr>
 
-<!-- RIGHT PANEL -->
+            </thead>
 
-<div class="right-panel">
+            <tbody id="tableBody">
 
-<h2>Upload PDFs</h2>
+                <tr>
 
-<div class="upload-box" id="dropZone">
+                    <td colspan="9">
 
-<input
-type="file"
-id="pdfInput"
-multiple
-accept=".pdf"
-hidden>
+                        No Data Available
 
-<p class="drag-text">
+                    </td>
 
-📄 Drag & Drop PDF Files Here
+                </tr>
 
-</p>
+            </tbody>
 
-<button id="chooseBtn">
+        </table>
 
-Choose Files
-
-</button>
-
-<button id="uploadBtn">
-
-Upload PDFs
-
-</button>
-
-<div id="status"></div>
-
-</div>
-
-<h2>Selected Files</h2>
-
-<div id="fileList">
-
-No files selected
-
-</div>
-
-</div>
+    </div>
 
 </div>
 
