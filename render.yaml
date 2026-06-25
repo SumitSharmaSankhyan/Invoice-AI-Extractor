@@ -1,1 +1,6 @@
-
+services:
+  - type: web
+    name: invoice-ai-extractor
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
