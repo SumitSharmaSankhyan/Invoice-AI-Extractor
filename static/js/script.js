@@ -39,7 +39,7 @@ pdfInput.addEventListener("change", () => {
     if (selectedFiles.length > 0) {
         extractBtn.disabled = false;
     }
-
+    
 });
 
 // =============================
