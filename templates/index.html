@@ -16,13 +16,69 @@ href="{{ url_for('static', filename='css/style.css') }}">
 
 <body>
 
-<div class="container">
+<header>
 
-<h1>Invoice AI Extractor Pro</h1>
+<div class="logo">
 
-<p class="subtitle">
-Upload scanned invoice PDFs
-</p>
+Invoice AI Extractor Pro
+
+</div>
+
+<div class="version">
+
+Version 1.0
+
+</div>
+
+</header>
+
+<div class="main-container">
+
+<!-- LEFT PANEL -->
+
+<div class="left-panel">
+
+<h2>Dashboard</h2>
+
+<div class="card">
+
+<h3>Total PDFs</h3>
+
+<p id="totalFiles">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>Uploaded</h3>
+
+<p id="uploadedFiles">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>Completed</h3>
+
+<p id="completedFiles">0</p>
+
+</div>
+
+<div class="card">
+
+<h3>Failed</h3>
+
+<p id="failedFiles">0</p>
+
+</div>
+
+</div>
+
+<!-- RIGHT PANEL -->
+
+<div class="right-panel">
+
+<h2>Upload PDFs</h2>
 
 <div class="upload-box" id="dropZone">
 
@@ -45,8 +101,6 @@ Choose Files
 
 </button>
 
-<div id="fileList"></div>
-
 <button id="uploadBtn">
 
 Upload PDFs
@@ -54,6 +108,16 @@ Upload PDFs
 </button>
 
 <div id="status"></div>
+
+</div>
+
+<h2>Selected Files</h2>
+
+<div id="fileList">
+
+No files selected
+
+</div>
 
 </div>
 
