@@ -7,10 +7,10 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Invoice Extractor</title>
+    <title>Invoice AI Extractor</title>
 
     <link rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}">
+          href="{{ url_for('static', filename='css/style.css') }}">
 
 </head>
 
@@ -18,106 +18,163 @@
 
 <div class="container">
 
-    <h1>Invoice Extractor</h1>
+    <!-- ========================= -->
+    <!-- Header -->
+    <!-- ========================= -->
 
-    <p class="subtitle">
-        Upload scanned invoice PDFs and extract invoice details
-    </p>
+    <div class="header">
 
-    <!-- Upload Section -->
+        <h1>Invoice AI Extractor</h1>
 
-    <div class="top-buttons">
+        <p>
+            Upload scanned PDF invoices, extract invoice details,
+            review them and download Excel.
+        </p>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- Buttons -->
+    <!-- ========================= -->
+
+    <div class="button-area">
 
         <input
-            type="file"
-            id="pdfInput"
-            accept=".pdf"
-            multiple
-            hidden>
+                type="file"
+                id="pdfInput"
+                accept=".pdf"
+                multiple
+                hidden>
 
         <button id="chooseBtn">
-            Choose PDF Files
+
+            📂 Choose PDF Files
+
         </button>
 
         <button id="extractBtn" disabled>
-            Extract Data
+
+            🚀 Extract Data
+
         </button>
 
         <button id="downloadBtn" disabled>
-            Download Excel
+
+            📥 Download Excel
+
         </button>
 
         <button id="resetBtn">
-            Start Over
+
+            🔄 Start Over
+
         </button>
 
     </div>
 
-    <!-- Selected Files -->
 
-    <div class="selected-files">
+    <!-- ========================= -->
+    <!-- Selected Files -->
+    <!-- ========================= -->
+
+    <div class="card">
 
         <h2>Selected PDF Files</h2>
 
         <div id="fileList">
 
-            No PDF Selected
+            No PDF selected.
 
         </div>
 
     </div>
 
-    <!-- Loading -->
 
-    <div id="loader" class="loader">
+    <!-- ========================= -->
+    <!-- Loader -->
+    <!-- ========================= -->
 
-        Extracting invoice data...
+    <div
+            id="loader"
+            class="loader">
+
+        Processing PDFs...
 
     </div>
 
-    <!-- Result Table -->
 
-    <div class="table-container">
+    <!-- ========================= -->
+    <!-- Editable Result Table -->
+    <!-- ========================= -->
 
-        <table id="resultTable">
+    <div class="card">
 
-            <thead>
+        <h2>Extracted Invoice Data</h2>
+
+        <div class="table-wrapper">
+
+            <table id="resultTable">
+
+                <thead>
 
                 <tr>
 
                     <th>PO Code</th>
+
                     <th>Invoice No</th>
+
                     <th>Invoice Date</th>
+
                     <th>Base Amount</th>
+
                     <th>IGST</th>
-                    <th>CGST/CESS</th>
+
+                    <th>CGST</th>
+
                     <th>SGST</th>
-                    <th>Other Charges</th>
-                    <th>Total Amount</th>
+
+                    <th>Other</th>
+
+                    <th>Total</th>
 
                 </tr>
 
-            </thead>
+                </thead>
 
-            <tbody id="tableBody">
+                <tbody id="tableBody">
 
                 <tr>
 
                     <td colspan="9">
 
-                        No Data Available
+                        No data available.
 
                     </td>
 
                 </tr>
 
-            </tbody>
+                </tbody>
 
-        </table>
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================= -->
+    <!-- Footer -->
+    <!-- ========================= -->
+
+    <div class="footer">
+
+        Invoice AI Extractor • Version 1.0
 
     </div>
 
 </div>
+
 
 <script
 src="{{ url_for('static', filename='js/script.js') }}">
