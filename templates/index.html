@@ -5,8 +5,7 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Invoice AI Extractor Pro</title>
 
@@ -21,19 +20,40 @@ href="{{ url_for('static', filename='css/style.css') }}">
 
 <h1>Invoice AI Extractor Pro</h1>
 
-<p>Upload scanned invoice PDFs</p>
+<p class="subtitle">
+Upload scanned invoice PDFs
+</p>
 
-<div class="upload-box">
+<div class="upload-box" id="dropZone">
 
-Drag & Drop PDF Files Here
+<input
+type="file"
+id="pdfInput"
+multiple
+accept=".pdf"
+hidden>
 
-<br><br>
+<p class="drag-text">
 
-<button>
+📄 Drag & Drop PDF Files Here
+
+</p>
+
+<button id="chooseBtn">
 
 Choose Files
 
 </button>
+
+<div id="fileList"></div>
+
+<button id="uploadBtn">
+
+Upload PDFs
+
+</button>
+
+<div id="status"></div>
 
 </div>
 
