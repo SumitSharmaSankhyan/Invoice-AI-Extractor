@@ -6,48 +6,64 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:Segoe UI, Arial, sans-serif;
 }
-
-/* ===========================
-   BODY
-=========================== */
 
 body{
 
-    background:#eef2f7;
+    background:#edf2f7;
+
+    color:#333;
 
 }
 
 /* ===========================
-   CONTAINER
+   MAIN CONTAINER
 =========================== */
 
 .container{
 
     width:95%;
-    max-width:1400px;
-    margin:30px auto;
+
+    max-width:1500px;
+
+    margin:25px auto;
 
 }
 
 /* ===========================
-   HEADING
+   HEADER
 =========================== */
 
-h1{
+.header{
 
-    font-size:42px;
-    color:#1f2937;
+    background:white;
+
+    padding:30px;
+
+    border-radius:12px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    margin-bottom:25px;
+
+}
+
+.header h1{
+
+    color:#1565c0;
+
+    font-size:38px;
+
     margin-bottom:10px;
 
 }
 
-.subtitle{
+.header p{
 
-    color:#555;
-    margin-bottom:30px;
-    font-size:18px;
+    color:#666;
+
+    font-size:17px;
 
 }
 
@@ -55,42 +71,41 @@ h1{
    BUTTON AREA
 =========================== */
 
-.top-buttons{
+.button-area{
 
     display:flex;
-    gap:15px;
+
     flex-wrap:wrap;
-    margin-bottom:30px;
+
+    gap:15px;
+
+    margin-bottom:25px;
 
 }
 
-/* ===========================
-   BUTTONS
-=========================== */
-
 button{
-
-    padding:14px 28px;
 
     border:none;
 
     border-radius:8px;
 
-    font-size:16px;
-
-    cursor:pointer;
+    padding:14px 28px;
 
     color:white;
 
-    transition:.3s;
+    cursor:pointer;
+
+    font-size:16px;
+
+    transition:.25s;
 
 }
 
-/* Choose Files */
+/* Choose */
 
 #chooseBtn{
 
-    background:#1976D2;
+    background:#1976d2;
 
 }
 
@@ -104,7 +119,7 @@ button{
 
 #extractBtn{
 
-    background:#2E7D32;
+    background:#2e7d32;
 
 }
 
@@ -118,21 +133,21 @@ button{
 
 #downloadBtn{
 
-    background:#FF9800;
+    background:#ff9800;
 
 }
 
 #downloadBtn:hover{
 
-    background:#e68900;
+    background:#ef6c00;
 
 }
 
-/* Start Over */
+/* Reset */
 
 #resetBtn{
 
-    background:#D32F2F;
+    background:#d32f2f;
 
 }
 
@@ -142,41 +157,43 @@ button{
 
 }
 
-/* Disabled */
-
 button:disabled{
 
-    opacity:.5;
+    opacity:.45;
 
     cursor:not-allowed;
 
 }
 
 /* ===========================
-   FILE LIST
+   CARD
 =========================== */
 
-.selected-files{
+.card{
 
     background:white;
 
-    border-radius:10px;
-
     padding:20px;
 
-    box-shadow:0 2px 8px rgba(0,0,0,.1);
+    border-radius:12px;
 
-    margin-bottom:30px;
+    margin-bottom:25px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+}
+
+.card h2{
+
+    color:#1565c0;
+
+    margin-bottom:20px;
 
 }
 
-.selected-files h2{
-
-    margin-bottom:15px;
-
-    color:#1f2937;
-
-}
+/* ===========================
+   FILE LIST
+=========================== */
 
 #fileList{
 
@@ -186,15 +203,15 @@ button:disabled{
 
 .file-item{
 
-    background:#f7f7f7;
+    background:#f5f5f5;
+
+    border-left:5px solid #1976d2;
 
     padding:12px;
 
-    border-radius:6px;
-
     margin-bottom:10px;
 
-    border-left:5px solid #1976D2;
+    border-radius:6px;
 
 }
 
@@ -206,15 +223,15 @@ button:disabled{
 
     display:none;
 
-    background:#FFF3CD;
+    background:#fff8e1;
 
-    color:#856404;
+    border-left:6px solid orange;
 
     padding:15px;
 
     border-radius:8px;
 
-    margin-bottom:20px;
+    margin-bottom:25px;
 
     font-weight:bold;
 
@@ -224,15 +241,9 @@ button:disabled{
    TABLE
 =========================== */
 
-.table-container{
+.table-wrapper{
 
     overflow-x:auto;
-
-    background:white;
-
-    border-radius:10px;
-
-    box-shadow:0 2px 8px rgba(0,0,0,.1);
 
 }
 
@@ -242,11 +253,13 @@ table{
 
     border-collapse:collapse;
 
+    min-width:1100px;
+
 }
 
 thead{
 
-    background:#1976D2;
+    background:#1976d2;
 
     color:white;
 
@@ -258,55 +271,73 @@ th{
 
     white-space:nowrap;
 
-    text-align:center;
-
 }
 
 td{
 
-    padding:12px;
-
-    text-align:center;
+    padding:14px;
 
     border-bottom:1px solid #ddd;
+
+    text-align:center;
 
 }
 
 tbody tr:hover{
 
-    background:#f5f5f5;
+    background:#f8fbff;
 
 }
 
-/* Editable Cell */
+/* Editable Cells */
 
 td[contenteditable="true"]{
 
-    background:#fff9c4;
+    background:#fffde7;
+
+    cursor:text;
 
 }
 
 /* ===========================
-   SUCCESS
+   FOOTER
 =========================== */
 
-.success{
+.footer{
 
-    color:green;
+    text-align:center;
 
-    font-weight:bold;
+    margin-top:30px;
+
+    color:#888;
+
+    font-size:14px;
 
 }
 
 /* ===========================
-   ERROR
+   SCROLL BAR
 =========================== */
 
-.error{
+::-webkit-scrollbar{
 
-    color:red;
+    width:10px;
 
-    font-weight:bold;
+    height:10px;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#1976d2;
+
+    border-radius:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#ddd;
 
 }
 
@@ -316,7 +347,19 @@ td[contenteditable="true"]{
 
 @media(max-width:900px){
 
-.top-buttons{
+.header{
+
+    text-align:center;
+
+}
+
+.header h1{
+
+    font-size:30px;
+
+}
+
+.button-area{
 
     flex-direction:column;
 
@@ -328,15 +371,9 @@ button{
 
 }
 
-h1{
+table{
 
-    font-size:30px;
-
-}
-
-.subtitle{
-
-    font-size:16px;
+    min-width:900px;
 
 }
 
