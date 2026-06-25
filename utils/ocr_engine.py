@@ -3,96 +3,112 @@ import cv2
 import pytesseract
 
 
-# ----------------------------------------------------
-# IMPORTANT
-# ----------------------------------------------------
-# Uncomment and edit this ONLY if Tesseract is not
-# in your system PATH.
-#
-# Windows Example:
-#
-# pytesseract.pytesseract.tesseract_cmd = (
-#     r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-# )
-#
-# ----------------------------------------------------
+class OCREngine:
 
+    def __init__(self):
 
-def preprocess_image(image_path):
-    """
-    Improve image quality before OCR.
-    """
+        # Uncomment and change this path only if needed.
+        #
+        # Example:
+        #
+        # pytesseract.pytesseract.tesseract_cmd = (
+        #     r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+        # )
 
-    image = cv2.imread(image_path)
+        self.config = r'--oem 3 --psm 6'
 
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    # ----------------------------------------
 
-    gray = cv2.GaussianBlur(gray, (3, 3), 0)
+    def preprocess(self, image_path):
 
-    gray = cv2.threshold(
-        gray,
-        0,
-        255,
-        cv2.THRESH_BINARY + cv2.THRESH_OTSU
-    )[1]
+        image = cv2.imread(image_path)
 
-    return gray
+        if image is None:
+            raise Exception(f"Cannot open image: {image_path}")
 
+        gray = cv2.cvtColor(
+            image,
+            cv2.COLOR_BGR2GRAY
+        )
 
-def extract_text(image_path):
-    """
-    OCR from a single image.
-    """
+        gray = cv2.GaussianBlur(
+            gray,
+            (3,3),
+            0
+        )
 
-    processed = preprocess_image(image_path)
+        gray = cv2.threshold(
+            gray,
+            0,
+            255,
+            cv2.THRESH_BINARY + cv2.THRESH_OTSU
+        )[1]
 
-    custom_config = r'--oem 3 --psm 6'
+        return gray
 
-    text = pytesseract.image_to_string(
-        processed,
-        lang="eng",
-        config=custom_config
-    )
+    # ----------------------------------------
 
-    return text
+    def read_image(self, image_path):
 
+        processed = self.preprocess(image_path)
 
-def extract_from_images(image_paths):
-    """
-    OCR from multiple images.
-    """
+        text = pytesseract.image_to_string(
 
-    complete_text = ""
+            processed,
 
-    for image in image_paths:
+            lang="eng",
 
-        print("Reading:", image)
+            config=self.config
 
-        page_text = extract_text(image)
+        )
 
-        complete_text += "\n"
-        complete_text += "=" * 70
-        complete_text += "\n"
+        return text
 
-        complete_text += page_text
+    # ----------------------------------------
 
-        complete_text += "\n"
+    def read_images(self, image_list):
 
-    return complete_text
+        full_text = ""
 
+        for image in image_list:
 
-def save_text(text, filename="output/ocr_result.txt"):
+            print(f"Reading : {image}")
 
-    folder = os.path.dirname(filename)
+            text = self.read_image(image)
 
-    os.makedirs(folder, exist_ok=True)
+            full_text += "\n"
+            full_text += "="*80
+            full_text += "\n"
 
-    with open(
-        filename,
-        "w",
-        encoding="utf-8"
-    ) as f:
+            full_text += text
 
-        f.write(text)
+            full_text += "\n"
 
-    return filename
+        return full_text
+
+    # ----------------------------------------
+
+    def save_text(
+        self,
+        text,
+        output_file="output/ocr_result.txt"
+    ):
+
+        os.makedirs(
+            os.path.dirname(output_file),
+            exist_ok=True
+        )
+
+        with open(
+
+            output_file,
+
+            "w",
+
+            encoding="utf-8"
+
+        ) as f:
+
+            f.write(text)
+
+        return output_file
