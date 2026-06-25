@@ -1,53 +1,70 @@
 import os
-import fitz  # PyMuPDF
+import fitz
 
 
-def pdf_to_images(pdf_path, output_folder="output/images", dpi=300):
-    """
-    Convert every page of a PDF into PNG images.
+class PDFConverter:
 
-    Parameters
-    ----------
-    pdf_path : str
-        Full path of PDF.
+    def __init__(self, dpi=300):
 
-    output_folder : str
-        Folder where images will be saved.
+        self.dpi = dpi
 
-    dpi : int
-        Image quality (300 recommended for OCR)
+        self.zoom = dpi / 72
 
-    Returns
-    -------
-    list
-        List of generated image paths.
-    """
+        self.matrix = fitz.Matrix(
+            self.zoom,
+            self.zoom
+        )
 
-    os.makedirs(output_folder, exist_ok=True)
+    def convert(self,
+                pdf_path,
+                output_folder="output/images"):
 
-    pdf = fitz.open(pdf_path)
+        os.makedirs(
+            output_folder,
+            exist_ok=True
+        )
 
-    image_paths = []
+        pdf = fitz.open(pdf_path)
 
-    zoom = dpi / 72
-    matrix = fitz.Matrix(zoom, zoom)
+        image_paths = []
 
-    pdf_name = os.path.splitext(os.path.basename(pdf_path))[0]
+        pdf_name = os.path.splitext(
+            os.path.basename(pdf_path)
+        )[0]
 
-    for page_number in range(len(pdf)):
+        for page_number in range(len(pdf)):
 
-        page = pdf.load_page(page_number)
+            page = pdf.load_page(page_number)
 
-        pix = page.get_pixmap(matrix=matrix)
+            pix = page.get_pixmap(
+                matrix=self.matrix
+            )
 
-        image_name = f"{pdf_name}_page_{page_number + 1}.png"
+            image_name = (
+                f"{pdf_name}_"
+                f"page_{page_number+1}.png"
+            )
 
-        image_path = os.path.join(output_folder, image_name)
+            image_path = os.path.join(
+                output_folder,
+                image_name
+            )
 
-        pix.save(image_path)
+            pix.save(image_path)
 
-        image_paths.append(image_path)
+            image_paths.append(image_path)
 
-    pdf.close()
+        pdf.close()
 
-    return image_paths
+        return image_paths
+
+
+if __name__ == "__main__":
+
+    converter = PDFConverter()
+
+    images = converter.convert(
+        "uploads/sample.pdf"
+    )
+
+    print(images)
