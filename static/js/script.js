@@ -1,13 +1,11 @@
-// =============================
-// Invoice Extractor
-// =============================
+// =======================================
+// Invoice AI Extractor
+// script.js
+// =======================================
 
 let selectedFiles = [];
 
-// =============================
-// HTML Elements
-// =============================
-
+// Elements
 const pdfInput = document.getElementById("pdfInput");
 const chooseBtn = document.getElementById("chooseBtn");
 const extractBtn = document.getElementById("extractBtn");
@@ -18,33 +16,29 @@ const fileList = document.getElementById("fileList");
 const tableBody = document.getElementById("tableBody");
 const loader = document.getElementById("loader");
 
-// =============================
+// =======================================
 // Choose Files
-// =============================
+// =======================================
 
-chooseBtn.addEventListener("click", () => {
+chooseBtn.onclick = () => {
     pdfInput.click();
-});
+};
 
-// =============================
-// File Selected
-// =============================
+// =======================================
+// Files Selected
+// =======================================
 
-pdfInput.addEventListener("change", () => {
+pdfInput.onchange = function () {
 
     selectedFiles = Array.from(pdfInput.files);
 
     showFiles();
 
-    if (selectedFiles.length > 0) {
-        extractBtn.disabled = false;
-    }
-    
-});
+};
 
-// =============================
-// Show Selected Files
-// =============================
+// =======================================
+// Show Files
+// =======================================
 
 function showFiles() {
 
@@ -52,7 +46,7 @@ function showFiles() {
 
     if (selectedFiles.length === 0) {
 
-        fileList.innerHTML = "No PDF Selected";
+        fileList.innerHTML = "No PDF selected.";
 
         extractBtn.disabled = true;
 
@@ -60,18 +54,21 @@ function showFiles() {
 
     }
 
+    extractBtn.disabled = false;
+
     selectedFiles.forEach(file => {
 
         let div = document.createElement("div");
 
         div.className = "file-item";
 
-        div.innerHTML =
-            "📄 " +
-            file.name +
-            " (" +
-            (file.size / 1024 / 1024).toFixed(2) +
-            " MB)";
+        let size = (file.size / 1024 / 1024).toFixed(2);
+
+        div.innerHTML = `
+            <strong>📄 ${file.name}</strong>
+            <br>
+            Size : ${size} MB
+        `;
 
         fileList.appendChild(div);
 
@@ -79,11 +76,11 @@ function showFiles() {
 
 }
 
-// =============================
-// Extract Button
-// =============================
+// =======================================
+// Extract Data
+// =======================================
 
-extractBtn.addEventListener("click", async () => {
+extractBtn.onclick = async function () {
 
     if (selectedFiles.length === 0) {
 
@@ -97,7 +94,11 @@ extractBtn.addEventListener("click", async () => {
 
     extractBtn.disabled = true;
 
-    const formData = new FormData();
+    downloadBtn.disabled = true;
+
+    tableBody.innerHTML = "";
+
+    let formData = new FormData();
 
     selectedFiles.forEach(file => {
 
@@ -115,53 +116,55 @@ extractBtn.addEventListener("click", async () => {
 
         });
 
-        const result = await response.json();
+        const data = await response.json();
 
         loader.style.display = "none";
 
         extractBtn.disabled = false;
-
-        showTable(result);
 
         downloadBtn.disabled = false;
 
+        showTable(data);
+
     }
 
-    catch (error) {
+    catch (err) {
 
         loader.style.display = "none";
 
         extractBtn.disabled = false;
 
-        alert("Unable to extract invoice data.");
+        alert("Extraction failed.");
 
-        console.log(error);
+        console.log(err);
 
     }
 
-});
+};
 
-// =============================
-// Show Table
-// =============================
+// =======================================
+// Show Result Table
+// =======================================
 
 function showTable(data) {
 
     tableBody.innerHTML = "";
 
-    if (!data || data.length === 0) {
+    if (data.length === 0) {
 
-        tableBody.innerHTML =
+        tableBody.innerHTML = `
 
-        `<tr>
+        <tr>
 
-            <td colspan="9">
+        <td colspan="9">
 
-                No Data Found
+        No Data Found
 
-            </td>
+        </td>
 
-        </tr>`;
+        </tr>
+
+        `;
 
         return;
 
@@ -169,79 +172,99 @@ function showTable(data) {
 
     data.forEach(item => {
 
-        tableBody.innerHTML +=
+        let row = document.createElement("tr");
 
-        `<tr>
+        row.innerHTML = `
 
-            <td contenteditable="true">${item.po}</td>
+        <td contenteditable="true">${item.po || ""}</td>
 
-            <td contenteditable="true">${item.invoice}</td>
+        <td contenteditable="true">${item.invoice_no || ""}</td>
 
-            <td contenteditable="true">${item.date}</td>
+        <td contenteditable="true">${item.invoice_date || ""}</td>
 
-            <td contenteditable="true">${item.base}</td>
+        <td contenteditable="true">${item.base_amount || ""}</td>
 
-            <td contenteditable="true">${item.igst}</td>
+        <td contenteditable="true">${item.igst || ""}</td>
 
-            <td contenteditable="true">${item.cgst}</td>
+        <td contenteditable="true">${item.cgst || ""}</td>
 
-            <td contenteditable="true">${item.sgst}</td>
+        <td contenteditable="true">${item.sgst || ""}</td>
 
-            <td contenteditable="true">${item.other}</td>
+        <td contenteditable="true">${item.other || ""}</td>
 
-            <td contenteditable="true">${item.total}</td>
+        <td contenteditable="true">${item.total || ""}</td>
 
-        </tr>`;
+        `;
+
+        tableBody.appendChild(row);
 
     });
 
 }
 
-// =============================
+// =======================================
 // Download Excel
-// =============================
+// =======================================
 
-downloadBtn.addEventListener("click", () => {
+downloadBtn.onclick = function () {
 
     window.location.href = "/download";
 
-});
+};
 
-// =============================
+// =======================================
 // Start Over
-// =============================
+// =======================================
 
-resetBtn.addEventListener("click", () => {
+resetBtn.onclick = async function () {
 
     selectedFiles = [];
 
     pdfInput.value = "";
 
-    fileList.innerHTML = "No PDF Selected";
+    fileList.innerHTML = "No PDF selected.";
 
-    tableBody.innerHTML =
-
-    `<tr>
-
-        <td colspan="9">
-
-            No Data Available
-
-        </td>
-
-    </tr>`;
+    loader.style.display = "none";
 
     extractBtn.disabled = true;
 
     downloadBtn.disabled = true;
 
-    loader.style.display = "none";
+    tableBody.innerHTML = `
 
-});
+    <tr>
 
-// =============================
-// Drag & Drop (Optional)
-// =============================
+        <td colspan="9">
+
+        No Data Available
+
+        </td>
+
+    </tr>
+
+    `;
+
+    try {
+
+        await fetch("/reset", {
+
+            method: "POST"
+
+        });
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+    }
+
+};
+
+// =======================================
+// Prevent Browser Opening PDF
+// =======================================
 
 document.addEventListener("dragover", function(e){
 
