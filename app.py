@@ -1,126 +1,169 @@
 from flask import Flask, render_template, request, jsonify, send_file
-from openpyxl import Workbook
 import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = "uploads"
 OUTPUT_FOLDER = "output"
 
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["OUTPUT_FOLDER"] = OUTPUT_FOLDER
+
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
-last_result = []
 
+# -----------------------
+# HOME
+# -----------------------
 
 @app.route("/")
-def home():
+def index():
     return render_template("index.html")
 
+
+# -----------------------
+# UPLOAD PDF
+# -----------------------
+
+@app.route("/upload", methods=["POST"])
+def upload():
+
+    if "files" not in request.files:
+        return jsonify({
+            "success": False,
+            "message": "No files received"
+        })
+
+    files = request.files.getlist("files")
+
+    uploaded = []
+
+    for file in files:
+
+        if file.filename == "":
+            continue
+
+        if not file.filename.lower().endswith(".pdf"):
+            continue
+
+        filename = secure_filename(file.filename)
+
+        filepath = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            filename
+        )
+
+        file.save(filepath)
+
+        uploaded.append({
+            "name": filename,
+            "path": filepath,
+            "size": round(os.path.getsize(filepath)/1024/1024,2)
+        })
+
+    return jsonify({
+        "success": True,
+        "count": len(uploaded),
+        "files": uploaded
+    })
+
+
+# -----------------------
+# EXTRACT
+# -----------------------
 
 @app.route("/extract", methods=["POST"])
 def extract():
 
-    global last_result
+    """
+    OCR will be added here.
 
-    files = request.files.getlist("files")
+    For now this only returns blank rows.
+    """
+
+    data = request.json
+
+    files = data["files"]
 
     results = []
 
     for file in files:
 
-        filename = file.filename
-
-        save_path = os.path.join(UPLOAD_FOLDER, filename)
-
-        file.save(save_path)
-
-        # --------------------------
-        # TEMPORARY SAMPLE DATA
-        # OCR will replace this later
-        # --------------------------
-
         results.append({
-            "po": "PO123456",
-            "invoice": "INV001",
-            "date": "25-06-2026",
-            "base": "10000",
-            "igst": "1800",
-            "cgst": "0",
-            "sgst": "0",
-            "other": "0",
-            "total": "11800"
-        })
 
-    last_result = results
+            "filename": file["name"],
+
+            "vendor":"",
+
+            "po":"",
+
+            "invoice_no":"",
+
+            "invoice_date":"",
+
+            "base_amount":"",
+
+            "igst":"",
+
+            "cgst":"",
+
+            "sgst":"",
+
+            "other":"",
+
+            "total":""
+
+        })
 
     return jsonify(results)
 
 
+# -----------------------
+# DOWNLOAD EXCEL
+# -----------------------
+
 @app.route("/download")
 def download():
 
-    wb = Workbook()
-
-    ws = wb.active
-
-    ws.title = "Data Invoice"
-
-    # Column Headers
-    ws["A1"] = "PO Code"
-
-    ws["W1"] = "Invoice No"
-
-    ws["X1"] = "Invoice Date"
-
-    ws["Y1"] = "Base Amount"
-
-    ws["Z1"] = "IGST"
-
-    ws["AA1"] = "CGST"
-
-    ws["AB1"] = "SGST"
-
-    ws["AC1"] = "Other Charges"
-
-    ws["AD1"] = "Total Amount"
-
-    row = 2
-
-    for item in last_result:
-
-        ws[f"A{row}"] = item["po"]
-
-        ws[f"W{row}"] = item["invoice"]
-
-        ws[f"X{row}"] = item["date"]
-
-        ws[f"Y{row}"] = item["base"]
-
-        ws[f"Z{row}"] = item["igst"]
-
-        ws[f"AA{row}"] = item["cgst"]
-
-        ws[f"AB{row}"] = item["sgst"]
-
-        ws[f"AC{row}"] = item["other"]
-
-        ws[f"AD{row}"] = item["total"]
-
-        row += 1
-
-    output_path = os.path.join(
-        OUTPUT_FOLDER,
+    filepath = os.path.join(
+        app.config["OUTPUT_FOLDER"],
         "Invoice_Output.xlsx"
     )
 
-    wb.save(output_path)
+    if os.path.exists(filepath):
 
-    return send_file(
-        output_path,
-        as_attachment=True
-    )
+        return send_file(
+            filepath,
+            as_attachment=True
+        )
 
+    return "Excel not generated."
+
+
+# -----------------------
+# START OVER
+# -----------------------
+
+@app.route("/reset", methods=["POST"])
+def reset():
+
+    for folder in [UPLOAD_FOLDER, OUTPUT_FOLDER]:
+
+        for file in os.listdir(folder):
+
+            path = os.path.join(folder,file)
+
+            if os.path.isfile(path):
+                os.remove(path)
+
+    return jsonify({
+        "success":True
+    })
+
+
+# -----------------------
 
 if __name__ == "__main__":
     app.run(debug=True)
