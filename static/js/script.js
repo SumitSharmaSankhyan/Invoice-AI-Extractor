@@ -1,126 +1,256 @@
-const chooseBtn=document.getElementById("chooseBtn");
+// =============================
+// Invoice Extractor
+// =============================
 
-const pdfInput=document.getElementById("pdfInput");
+let selectedFiles = [];
 
-const fileList=document.getElementById("fileList");
+// =============================
+// HTML Elements
+// =============================
 
-const uploadBtn=document.getElementById("uploadBtn");
+const pdfInput = document.getElementById("pdfInput");
+const chooseBtn = document.getElementById("chooseBtn");
+const extractBtn = document.getElementById("extractBtn");
+const downloadBtn = document.getElementById("downloadBtn");
+const resetBtn = document.getElementById("resetBtn");
 
-const status=document.getElementById("status");
+const fileList = document.getElementById("fileList");
+const tableBody = document.getElementById("tableBody");
+const loader = document.getElementById("loader");
 
-const dropZone=document.getElementById("dropZone");
+// =============================
+// Choose Files
+// =============================
 
-let selectedFiles=[];
+chooseBtn.addEventListener("click", () => {
+    pdfInput.click();
+});
 
+// =============================
+// File Selected
+// =============================
 
-chooseBtn.onclick=()=>{
+pdfInput.addEventListener("change", () => {
 
-pdfInput.click();
+    selectedFiles = Array.from(pdfInput.files);
 
-};
+    showFiles();
 
-
-pdfInput.onchange=()=>{
-
-selectedFiles=[...pdfInput.files];
-
-displayFiles();
-
-};
-
-
-dropZone.addEventListener("dragover",(e)=>{
-
-e.preventDefault();
-
-dropZone.style.background="#dff4ff";
+    if (selectedFiles.length > 0) {
+        extractBtn.disabled = false;
+    }
 
 });
 
+// =============================
+// Show Selected Files
+// =============================
 
-dropZone.addEventListener("dragleave",()=>{
+function showFiles() {
 
-dropZone.style.background="white";
+    fileList.innerHTML = "";
 
-});
+    if (selectedFiles.length === 0) {
 
+        fileList.innerHTML = "No PDF Selected";
 
-dropZone.addEventListener("drop",(e)=>{
+        extractBtn.disabled = true;
 
-e.preventDefault();
+        return;
 
-dropZone.style.background="white";
+    }
 
-selectedFiles=[...e.dataTransfer.files];
+    selectedFiles.forEach(file => {
 
-displayFiles();
+        let div = document.createElement("div");
 
-});
+        div.className = "file-item";
 
+        div.innerHTML =
+            "📄 " +
+            file.name +
+            " (" +
+            (file.size / 1024 / 1024).toFixed(2) +
+            " MB)";
 
-function displayFiles(){
+        fileList.appendChild(div);
 
-fileList.innerHTML="";
-
-selectedFiles.forEach(file=>{
-
-fileList.innerHTML+=`
-
-<div class="file-item">
-
-📄 ${file.name}
-
-</div>
-
-`;
-
-});
+    });
 
 }
 
+// =============================
+// Extract Button
+// =============================
 
-uploadBtn.onclick=()=>{
+extractBtn.addEventListener("click", async () => {
 
-if(selectedFiles.length==0){
+    if (selectedFiles.length === 0) {
 
-alert("Select PDF files");
+        alert("Please choose PDF files.");
 
-return;
+        return;
+
+    }
+
+    loader.style.display = "block";
+
+    extractBtn.disabled = true;
+
+    const formData = new FormData();
+
+    selectedFiles.forEach(file => {
+
+        formData.append("files", file);
+
+    });
+
+    try {
+
+        const response = await fetch("/extract", {
+
+            method: "POST",
+
+            body: formData
+
+        });
+
+        const result = await response.json();
+
+        loader.style.display = "none";
+
+        extractBtn.disabled = false;
+
+        showTable(result);
+
+        downloadBtn.disabled = false;
+
+    }
+
+    catch (error) {
+
+        loader.style.display = "none";
+
+        extractBtn.disabled = false;
+
+        alert("Unable to extract invoice data.");
+
+        console.log(error);
+
+    }
+
+});
+
+// =============================
+// Show Table
+// =============================
+
+function showTable(data) {
+
+    tableBody.innerHTML = "";
+
+    if (!data || data.length === 0) {
+
+        tableBody.innerHTML =
+
+        `<tr>
+
+            <td colspan="9">
+
+                No Data Found
+
+            </td>
+
+        </tr>`;
+
+        return;
+
+    }
+
+    data.forEach(item => {
+
+        tableBody.innerHTML +=
+
+        `<tr>
+
+            <td contenteditable="true">${item.po}</td>
+
+            <td contenteditable="true">${item.invoice}</td>
+
+            <td contenteditable="true">${item.date}</td>
+
+            <td contenteditable="true">${item.base}</td>
+
+            <td contenteditable="true">${item.igst}</td>
+
+            <td contenteditable="true">${item.cgst}</td>
+
+            <td contenteditable="true">${item.sgst}</td>
+
+            <td contenteditable="true">${item.other}</td>
+
+            <td contenteditable="true">${item.total}</td>
+
+        </tr>`;
+
+    });
 
 }
 
-const formData=new FormData();
+// =============================
+// Download Excel
+// =============================
 
-selectedFiles.forEach(file=>{
+downloadBtn.addEventListener("click", () => {
 
-formData.append("files",file);
-
-});
-
-status.innerHTML="Uploading...";
-
-fetch("/upload",{
-
-method:"POST",
-
-body:formData
-
-})
-
-.then(res=>res.json())
-
-.then(data=>{
-
-status.innerHTML="✅ Uploaded Successfully";
-
-console.log(data);
-
-})
-
-.catch(()=>{
-
-status.innerHTML="Upload Failed";
+    window.location.href = "/download";
 
 });
 
-};
+// =============================
+// Start Over
+// =============================
+
+resetBtn.addEventListener("click", () => {
+
+    selectedFiles = [];
+
+    pdfInput.value = "";
+
+    fileList.innerHTML = "No PDF Selected";
+
+    tableBody.innerHTML =
+
+    `<tr>
+
+        <td colspan="9">
+
+            No Data Available
+
+        </td>
+
+    </tr>`;
+
+    extractBtn.disabled = true;
+
+    downloadBtn.disabled = true;
+
+    loader.style.display = "none";
+
+});
+
+// =============================
+// Drag & Drop (Optional)
+// =============================
+
+document.addEventListener("dragover", function(e){
+
+    e.preventDefault();
+
+});
+
+document.addEventListener("drop", function(e){
+
+    e.preventDefault();
+
+});
