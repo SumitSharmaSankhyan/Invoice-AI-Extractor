@@ -4,27 +4,31 @@ import pytesseract
 
 
 class OCREngine:
+    """
+    OCR Engine using Tesseract
+    """
 
     def __init__(self):
 
-        # Uncomment and change this path only if needed.
+        # Uncomment and change ONLY if needed.
         #
         # Example:
         #
-        # pytesseract.pytesseract.tesseract_cmd = (
-        #     r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-        # )
+        # pytesseract.pytesseract.tesseract_cmd = \
+        # r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
         self.config = r'--oem 3 --psm 6'
 
-    # ----------------------------------------
+    # --------------------------------------------------
 
     def preprocess(self, image_path):
 
         image = cv2.imread(image_path)
 
         if image is None:
-            raise Exception(f"Cannot open image: {image_path}")
+            raise Exception(
+                f"Unable to open image : {image_path}"
+            )
 
         gray = cv2.cvtColor(
             image,
@@ -46,9 +50,9 @@ class OCREngine:
 
         return gray
 
-    # ----------------------------------------
+    # --------------------------------------------------
 
-    def read_image(self, image_path):
+    def image_to_text(self, image_path):
 
         processed = self.preprocess(image_path)
 
@@ -64,51 +68,80 @@ class OCREngine:
 
         return text
 
-    # ----------------------------------------
+    # --------------------------------------------------
 
-    def read_images(self, image_list):
+    def images_to_text(self, image_list):
 
         full_text = ""
 
         for image in image_list:
 
-            print(f"Reading : {image}")
+            print(f"Reading OCR : {image}")
 
-            text = self.read_image(image)
+            page_text = self.image_to_text(image)
 
             full_text += "\n"
-            full_text += "="*80
+            full_text += "=" * 80
             full_text += "\n"
 
-            full_text += text
+            full_text += page_text
 
             full_text += "\n"
 
         return full_text
 
-    # ----------------------------------------
+    # --------------------------------------------------
 
     def save_text(
         self,
         text,
-        output_file="output/ocr_result.txt"
+        filename="output/ocr_result.txt"
     ):
 
+        folder = os.path.dirname(filename)
+
         os.makedirs(
-            os.path.dirname(output_file),
+            folder,
             exist_ok=True
         )
 
         with open(
-
-            output_file,
-
+            filename,
             "w",
-
             encoding="utf-8"
-
         ) as f:
 
             f.write(text)
 
-        return output_file
+        return filename
+
+    # --------------------------------------------------
+
+    def extract(self, image_list):
+
+        text = self.images_to_text(image_list)
+
+        self.save_text(text)
+
+        return text
+
+
+# =====================================================
+# Testing
+# =====================================================
+
+if __name__ == "__main__":
+
+    from pdf_converter import PDFConverter
+
+    converter = PDFConverter()
+
+    images = converter.convert(
+        "uploads/sample.pdf"
+    )
+
+    ocr = OCREngine()
+
+    text = ocr.extract(images)
+
+    print(text)
